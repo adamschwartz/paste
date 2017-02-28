@@ -1,0 +1,250 @@
+html {
+  background: #efefef;
+  color: #8b8d9e;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-size: 12px;
+}
+
+@media (min-width: 700px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+::selection {
+  color: #efefef;
+  background: #080a3c;
+}
+
+* {
+  box-sizing: inherit;
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0
+}
+
+.surface {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 2em;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1em
+  }
+}
+
+.results {
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.templates {
+  display: none;
+}
+
+.paste {
+  display: block;
+  padding: 2em;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 0;
+  overflow: hidden;
+  background: #fff;
+  border-radius: .25em;
+  opacity: 0;
+  transition: box-shadow .5s ease;
+}
+
+.paste:hover {
+  box-shadow: 0 1em 2em -1.5em rgba(0, 0, 0, .5)
+}
+
+.paste.done {
+  height: auto;
+  overflow: visible;
+  animation: fade-in .4s forwards ease;
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1
+  }
+}
+
+.paste + .paste {
+  margin-top: 2em;
+}
+
+.paste .row {
+  display: flex;
+  flex-flow: row;
+  margin-bottom: 2em;
+}
+
+.paste .textarea {
+  display: block;
+  font-family: Monaco, mono;
+  line-height: 1.37;
+  color: #929292;
+}
+
+.paste .textarea:focus {
+  outline: none;
+}
+
+.paste .actions {
+  padding: 0 2em;
+  text-align: center;
+}
+
+.paste .actions a {
+  display: inline-block;
+  margin: -1em 0;
+  padding: 1em 1.125em;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #0083ea;
+}
+
+.paste.image {
+  width: 40em;
+}
+
+.paste.image .original {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 25%;
+}
+
+.paste.image .original img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 50vh;
+}
+
+.paste.image .converted {
+  padding-left: 2em;
+  width: 75%;
+}
+
+.paste.data .converted {
+  width: 100%;
+}
+
+.copy-wrapper {
+  position: relative;
+}
+
+.copy-wrapper .textarea {
+  pointer-events: none;
+}
+
+.copy-wrapper input.copy-input {
+  position: absolute;
+  display: block;
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+
+.copy-wrapper input.copy-input:focus {
+  outline: none;
+  background: rgba(0, 0, 0, .1);
+}
+
+.paste.image .copy-wrapper .textarea {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  height: 6.625em;
+}
+
+.paste.data {
+  width: 40em;
+}
+
+.paste.text {
+  width: 100%;
+}
+
+.paste.text .original, .paste.text .converted {
+  width: 50%;
+  flex: 1;
+}
+
+.paste.text .original {
+  padding: 2em 1em 2em 2em;
+}
+
+.paste.text .converted {
+  padding: 2em 2em 2em 1em;
+}
+
+.paste.text .textarea {
+  white-space: pre;
+  overflow-x: auto;
+  padding-bottom: 1em;
+}
+
+.paste.text .textarea::-webkit-scrollbar {
+  background: transparent;
+  border: 0;
+  height: 8px;
+  width: 8px;
+}
+
+.paste.text .textarea::-webkit-scrollbar * {
+  background: transparent;
+}
+
+.paste.text .textarea::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #cacaca;
+  transition: all .35s ease;
+}
+
+.paste.text .textarea:hover::-webkit-scrollbar-thumb:active {
+  border: 1px solid #8b8d9e;
+  background: #8b8d9e;
+}
