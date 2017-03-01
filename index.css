@@ -157,6 +157,8 @@ h1 {
 }
 
 .paste.image .converted {
+  display: flex;
+  align-items: center;
   padding-left: 2em;
   width: 75%;
 }
@@ -167,6 +169,7 @@ h1 {
 
 .copy-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .copy-wrapper .textarea {
