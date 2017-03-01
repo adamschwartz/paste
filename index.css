@@ -105,6 +105,9 @@ h1 {
 .paste .row {
   display: flex;
   flex-flow: row;
+}
+
+.paste .row:not(:last-child) {
   margin-bottom: 2em;
 }
 
@@ -212,11 +215,11 @@ h1 {
 }
 
 .paste.text .original {
-  padding: 2em 1em 2em 2em;
+  padding-right: 1em;
 }
 
 .paste.text .converted {
-  padding: 2em 2em 2em 1em;
+  padding-left: 1em;
 }
 
 .paste.text .textarea {

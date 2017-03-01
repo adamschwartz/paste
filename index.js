@@ -10,6 +10,37 @@ const ellipsizeDataURL = (str) => {
   return ellipsizeStr(str, 400)
 }
 
+
+const getTypeFromString = (str) => {
+  if (str.indexOf('<?xml version="1.0"') === 0 && str.indexOf('<svg') >= 0 && str.indexOf('<!-- Generator: Sketch') >= 0 && str.indexOf('<desc>Created with Sketch.</desc>') >= 0)
+    return 'sketch-svg'
+
+  if (str.indexOf('<?xml version="1.0"') === 0 && str.indexOf('<svg') >= 0)
+    return 'svg'
+
+  // TODO - handle HTML/CSS/JS and other special types of files
+
+  return 'text'
+}
+
+const cleanSketchSVG = (str) => {
+  str = cleanSVG(str)
+  str = str.replace(/<!-- Generator: Sketch (.+?)\- http:\/\/www\.bohemiancoding\.com\/sketch -->\n?/, '')
+  return str
+}
+
+const cleanSVG = (str) => {
+  str = str.replace(/<\?xml(.+?)\?>\n?/, '')
+  str = str.replace(' version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"', '')
+  str = str.replace(/ ?version\=\"1\.1\" ?/, '')
+  str = str.replace(/ ?xmlns\=\"http\:\/\/www\.w3\.org\/2000\/svg\" ?/, '')
+  str = str.replace(/ ?xmlns\:xlink\=\"http\:\/\/www\.w3\.org\/1999\/xlink\" ?/, '')
+  str = str.replace(/<!--(.+?)-->\n?/, '')
+  str = str.replace(/<title>(.+?)<\/title>\n?/, '')
+  str = str.replace(/<desc>(.+?)<\/desc>\n?/, '')
+  return str
+}
+
 const createNewPasteEl = (type) => {
   const el = document.querySelector(`.templates .paste.${ type }`).cloneNode(true)
   document.querySelector('.results').prepend(el)
@@ -99,17 +130,49 @@ const handleData = (item) => {
 
 const handleText = (item) => {
   item.getAsString((str) => {
-    const el = createNewPasteEl('text')
-    el.classList.add('done')
-    el.querySelector('.original .textarea').textContent = str
-    el.querySelector('.converted .textarea').textContent = str
-
-    // TODO - prettify HTML/CSS/JS, clean up SVG, etc.
-
-    // TODO
-    // let blob = item.getAsFile()
-    // console.log(blob.name || 'Pasted text', str.length)
+    handleTextStr(str)
   })
+}
+
+const handleTextFile = (item) => {
+  const blob = item.getAsFile()
+  const reader = new FileReader()
+
+  reader.onload = (event) => {
+    handleTextStr(reader.result)
+  }
+
+  reader.readAsText(blob)
+}
+
+handleTextStr = (str) => {
+  const type = getTypeFromString(str)
+  let convertedStr = str
+
+  if (type === 'sketch-svg') {
+    convertedStr = cleanSketchSVG(str)
+    // TODO - prettify
+  }
+
+  else if (type === 'svg') {
+    convertedStr = cleanSVG(str)
+    // TODO - prettify
+  }
+
+  else if (type === 'text') {
+    // TODO
+  }
+
+  const el = createNewPasteEl('text')
+
+  el.querySelector('.original .textarea').textContent = str
+  el.querySelector('.converted .textarea').textContent = convertedStr
+
+  // TODO
+  // let blob = item.getAsFile()
+  // console.log(blob.name || 'Pasted text', str.length)
+
+  el.classList.add('done')
 }
 
 const handleEvents = (event) => {
@@ -117,12 +180,23 @@ const handleEvents = (event) => {
 
   const items = (event.clipboardData || event.dataTransfer).items
 
+  // TODO - use readAsBinaryString && readAsArrayBuffer?
+
   Array.prototype.forEach.call(items, (item) => {
     if (item.kind === 'file' && item.type.match('^image/')) {
+      // TODO - unify this with other SVG detection since currently something could make it past this but then fail in getTypeFromString
+      if (item.type.match('^image/svg')) {
+        handleTextFile(item)
+      }
+
       handleImage(item)
     }
 
-    //else if.. // TODO - handle text files, svg files etc.
+    else if (item.kind === 'file' && item.type.match('^text/plain')) {
+      handleTextFile(item)
+    }
+
+    //else if.. // handle other special file kinds
 
     else if (item.kind === 'file') {
       handleData(item)
