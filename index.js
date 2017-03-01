@@ -13,14 +13,17 @@ const ellipsizeDataURL = (str) => {
 
 const getTypeFromString = (str) => {
   if (str.indexOf('<?xml version="1.0"') === 0 && str.indexOf('<svg') >= 0 && str.indexOf('<!-- Generator: Sketch') >= 0 && str.indexOf('<desc>Created with Sketch.</desc>') >= 0)
-    return 'sketch-svg'
+    return 'text/sketch-svg'
 
   if (str.indexOf('<?xml version="1.0"') === 0 && str.indexOf('<svg') >= 0)
-    return 'svg'
+    return 'text/svg'
+
+  if (str[0] === '<' && str[str.length - 1] === '>') // TODO - be smarter
+    return 'text/html'
 
   // TODO - handle HTML/CSS/JS and other special types of files
 
-  return 'text'
+  return 'text/plain'
 }
 
 const cleanSketchSVG = (str) => {
@@ -129,8 +132,18 @@ const handleData = (item) => {
 }
 
 const handleText = (item) => {
+  const type = item.type
+
   item.getAsString((str) => {
-    handleTextStr(str)
+    if (type === 'text/html') {
+      handleTextStr(str, 'text/html')
+    }
+
+    // TODO - handle other text/types
+
+    else {
+      handleTextStr(str)
+    }
   })
 }
 
@@ -145,34 +158,61 @@ const handleTextFile = (item) => {
   reader.readAsText(blob)
 }
 
-handleTextStr = (str) => {
-  const type = getTypeFromString(str)
+handleTextStr = (str, type) => {
+  // TODO - better way?
+  if (!type) {
+    type = getTypeFromString(str)
+  }
+
   let convertedStr = str
 
-  if (type === 'sketch-svg') {
-    convertedStr = cleanSketchSVG(str)
-    // TODO - prettify
+  switch (type) {
+    case 'text/sketch-svg':
+      convertedStr = cleanSketchSVG(str)
+      // TODO - prettify
+
+    case 'text/svg':
+      convertedStr = cleanSVG(str)
+      // TODO - prettify
+
+    // case 'text/html':
+    //   // convertedStr = cleanHTML(str) // TODO - implement
+    //   // TODO - prettify
+
+    // case 'text/plain':
+    //   // TODO
+
+    // default
+    //   // TODO
   }
 
-  else if (type === 'svg') {
-    convertedStr = cleanSVG(str)
-    // TODO - prettify
-  }
+  if (type === 'text/html') {
+    const el = createNewPasteEl('html')
+    const iframeEl = el.querySelector('iframe')
+    const textareaEl = el.querySelector('.textarea')
 
-  else if (type === 'text') {
+    iframeEl.contentDocument.documentElement.innerHTML = convertedStr
+    textareaEl.textContent = convertedStr
+
     // TODO
+    // let blob = item.getAsFile()
+    // console.log(blob.name || 'Pasted text', str.length)
+
+    el.classList.add('done')
   }
 
-  const el = createNewPasteEl('text')
+  else {
+    const el = createNewPasteEl('text')
 
-  el.querySelector('.original .textarea').textContent = str
-  el.querySelector('.converted .textarea').textContent = convertedStr
+    el.querySelector('.original .textarea').textContent = str
+    el.querySelector('.converted .textarea').textContent = convertedStr
 
-  // TODO
-  // let blob = item.getAsFile()
-  // console.log(blob.name || 'Pasted text', str.length)
+    // TODO
+    // let blob = item.getAsFile()
+    // console.log(blob.name || 'Pasted text', str.length)
 
-  el.classList.add('done')
+    el.classList.add('done')
+  }
 }
 
 const handleEvents = (event) => {

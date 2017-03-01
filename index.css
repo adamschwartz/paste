@@ -122,6 +122,36 @@ h1 {
   outline: none;
 }
 
+.paste .textarea.mono {
+  white-space: pre;
+  overflow: auto;
+  padding-bottom: 1.5em;
+}
+
+.paste .textarea.mono::-webkit-scrollbar {
+  background: transparent;
+  border: 0;
+  height: 8px;
+  width: 8px;
+}
+
+.paste .textarea.mono::-webkit-scrollbar * {
+  background: transparent;
+}
+
+.paste .textarea.mono::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #cacaca;
+  transition: all .35s ease;
+}
+
+.paste .textarea.mono:hover::-webkit-scrollbar-thumb:active {
+  border: 1px solid #8b8d9e;
+  background: #8b8d9e;
+}
+
 .paste .actions {
   padding: 0 2em;
   text-align: center;
@@ -135,36 +165,6 @@ h1 {
   text-transform: uppercase;
   text-decoration: none;
   color: #0083ea;
-}
-
-.paste.image {
-  width: 40em;
-}
-
-.paste.image .original {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  width: 25%;
-}
-
-.paste.image .original img {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 50vh;
-}
-
-.paste.image .converted {
-  display: flex;
-  align-items: center;
-  padding-left: 2em;
-  width: 75%;
-}
-
-.paste.data .converted {
-  width: 100%;
 }
 
 .copy-wrapper {
@@ -197,6 +197,32 @@ h1 {
   background: rgba(0, 0, 0, .1);
 }
 
+.paste.image {
+  width: 40em;
+}
+
+.paste.image .original {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 25%;
+}
+
+.paste.image .original img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 50vh;
+}
+
+.paste.image .converted {
+  display: flex;
+  align-items: center;
+  padding-left: 2em;
+  width: 75%;
+}
+
 .paste.image .copy-wrapper .textarea {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -208,49 +234,32 @@ h1 {
   width: 40em;
 }
 
+.paste.data .converted {
+  width: 100%;
+}
+
+.paste.html {
+  width: 100%;
+}
+
+.paste.html iframe {
+  border: 0;
+  width: 100%;
+  height: 50vh; /* TODO - size based on contents with JS */
+}
+
 .paste.text {
   width: 100%;
 }
 
-.paste.text .original, .paste.text .converted {
-  width: 50%;
-  flex: 1;
-}
-
 .paste.text .original {
+  flex: 1;
+  width: 50%;
   padding-right: 1em;
 }
 
 .paste.text .converted {
+  flex: 1;
+  width: 50%;
   padding-left: 1em;
-}
-
-.paste.text .textarea {
-  white-space: pre;
-  overflow-x: auto;
-  padding-bottom: 1em;
-}
-
-.paste.text .textarea::-webkit-scrollbar {
-  background: transparent;
-  border: 0;
-  height: 8px;
-  width: 8px;
-}
-
-.paste.text .textarea::-webkit-scrollbar * {
-  background: transparent;
-}
-
-.paste.text .textarea::-webkit-scrollbar-thumb {
-  cursor: pointer;
-  border-radius: 999px;
-  background: #fff;
-  border: 1px solid #cacaca;
-  transition: all .35s ease;
-}
-
-.paste.text .textarea:hover::-webkit-scrollbar-thumb:active {
-  border: 1px solid #8b8d9e;
-  background: #8b8d9e;
 }
