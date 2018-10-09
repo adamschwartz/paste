@@ -111,7 +111,8 @@ h1 {
   margin-bottom: 2em;
 }
 
-.paste .textarea {
+.paste .textarea,
+.paste textarea.copy-textarea {
   display: block;
   font-family: Monaco, mono;
   line-height: 1.37;
@@ -176,7 +177,7 @@ h1 {
   pointer-events: none;
 }
 
-.copy-wrapper input.copy-input {
+.copy-wrapper textarea.copy-textarea {
   position: absolute;
   display: block;
   font-size: inherit;
@@ -190,11 +191,18 @@ h1 {
   background: transparent;
   color: transparent;
   cursor: pointer;
+  resize: none;
+  overflow: hidden;
 }
 
-.copy-wrapper input.copy-input:focus {
+.copy-wrapper textarea.copy-textarea:focus {
   outline: none;
+}
+
+.copy-wrapper textarea.copy-textarea:focus,
+.copy-wrapper textarea.copy-textarea::selection {
   background: rgba(0, 0, 0, .1);
+  color: transparent;
 }
 
 .paste.image {

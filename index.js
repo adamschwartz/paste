@@ -59,7 +59,7 @@ const handleImage = (item) => {
     const el = createNewPasteEl('image')
     const originalEl = el.querySelector('.original')
     const textareaEl = el.querySelector('.converted .textarea')
-    const copyInput = el.querySelector('.converted input.copy-input')
+    const copyTextarea = el.querySelector('.converted textarea.copy-textarea')
     const actionsEl = el.querySelector('.actions')
 
     const img = new Image()
@@ -81,13 +81,13 @@ const handleImage = (item) => {
     const copy = (event) => {
       event.preventDefault()
 
-      copyInput.value = dataURL
-      copyInput.select()
+      copyTextarea.value = dataURL
+      copyTextarea.select()
 
       try {
         document.execCommand('copy')
         // TODO - success message
-        copyInput.blur()
+        copyTextarea.blur()
       }
 
       catch (err) {
@@ -96,7 +96,7 @@ const handleImage = (item) => {
     }
 
     copyLink.addEventListener('click', copy)
-    copyInput.addEventListener('click', copy)
+    copyTextarea.addEventListener('click', copy)
 
     // console.log(blob.name || 'Pasted image', blob.size, blob.type, img.width, img.height) // TODO
 
