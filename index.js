@@ -114,6 +114,7 @@ const handleData = (item) => {
     const dataURL = event.target.result
     const el = createNewPasteEl('data')
     const textareaEl = el.querySelector('.textarea')
+    const copyTextarea = el.querySelector('.converted textarea.copy-textarea')
     const actionsEl = el.querySelector('.actions')
 
     textareaEl.textContent = ellipsizeDataURL(dataURL)
@@ -122,6 +123,31 @@ const handleData = (item) => {
     openLink.href = dataURL
     openLink.textContent = 'Open'
     actionsEl.appendChild(openLink)
+
+    const copyLink = document.createElement('a')
+    copyLink.href = dataURL
+    copyLink.textContent = 'Copy'
+    actionsEl.appendChild(copyLink)
+
+    const copy = (event) => {
+      event.preventDefault()
+
+      copyTextarea.value = dataURL
+      copyTextarea.select()
+
+      try {
+        document.execCommand('copy')
+        // TODO - success message
+        copyTextarea.blur()
+      }
+
+      catch (err) {
+        console.error('Could not run document.execCommand(\'copy\')')
+      }
+    }
+
+    copyLink.addEventListener('click', copy)
+    copyTextarea.addEventListener('click', copy)
 
     // console.log(blob.name || 'Pasted data', blob.size, blob.type) // TODO
 
