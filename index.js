@@ -184,6 +184,37 @@ const handleTextFile = (item) => {
   reader.readAsText(blob)
 }
 
+const latLonRegex = /^\s*([+-]?(?:90(?:.0+)?|[0-8]?\d(?:.\d+)?))\s*[°]?\s*([NS])?\s*(?:,|\s+)\s*([+-]?(?:180(?:.0+)?|1[0-7]\d(?:.\d+)?|\d{1,2}(?:.\d+)?))\s*[°]?\s*([EW])?\s*$/i
+
+getLatLonFromText = text => {
+  const match = latLonRegex.test(text)
+  if (!match) return
+
+  const m = text.trim().match(/^\s*([+-]?\d+(?:\.\d+)?)\s*°?\s*([NS])?\s*(?:,|\s+)\s*([+-]?\d+(?:\.\d+)?)\s*°?\s*([EW])?\s*$/i)
+  const parts = m ? [
+    (m[2] ? (m[2].toUpperCase()==='S'?-1:1) : 1) * parseFloat(m[1].replace(/^\+/, '')),
+    (m[4] ? (m[4].toUpperCase()==='W'?-1:1) : 1) * parseFloat(m[3].replace(/^\+/, ''))
+  ] : null
+
+  if (!parts || !parts.length || parts.length !== 2) return
+
+  const [lat, lon] = parts
+  if (!lat || !lon) return
+
+  return [lat, lon]
+}
+
+getBbox50Miles = (lat, lon) => {
+  const dLat = 50 / 69.0;
+  const dLon = 50 / (69.172 * Math.cos(lat * Math.PI / 180));
+  const minLat = Math.max(-90, lat - dLat);
+  const maxLat = Math.min(90,  lat + dLat);
+  let minLon = lon - dLon, maxLon = lon + dLon;
+  minLon = ((minLon + 180) % 360 + 360) % 360 - 180;
+  maxLon = ((maxLon + 180) % 360 + 360) % 360 - 180;
+  return [minLon, minLat, maxLon, maxLat];
+}
+
 handleTextStr = (str, type) => {
   // TODO - better way?
   if (!type) {
@@ -211,6 +242,32 @@ handleTextStr = (str, type) => {
     // default
     //   // TODO
   }
+
+  // Map from lat/lon
+  if (latLonRegex.test(convertedStr)) {
+    const latLon = getLatLonFromText(convertedStr)
+
+    if (latLon) {
+      const [lat, lon] = latLon
+      const [minLon, minLat, maxLon, maxLat] = getBbox50Miles(lat, lon)
+
+      html = `
+        <iframe
+          width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+          src="https://www.openstreetmap.org/export/embed.html?marker=${lat},${lon}&bbox=${minLon},${minLat},${maxLon},${maxLat}&layer=mapnik">
+        </iframe>
+      `
+
+      const el = createNewPasteEl('html')
+      const iframeEl = el.querySelector('iframe')
+      iframeEl.contentDocument.documentElement.innerHTML = html
+      el.querySelector('.textarea').parentElement.remove()
+      el.classList.add('done')
+      return
+    }
+  }
+
+  // Regular HTML
 
   if (type === 'text/html') {
     const el = createNewPasteEl('html')
@@ -261,8 +318,6 @@ const handleEvents = (event) => {
     else if (item.kind === 'file' && item.type.match('^text/plain')) {
       handleTextFile(item)
     }
-
-    //else if.. // handle other special file kinds
 
     else if (item.kind === 'file') {
       handleData(item)
