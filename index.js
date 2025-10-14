@@ -184,6 +184,8 @@ const handleTextFile = (item) => {
   reader.readAsText(blob)
 }
 
+const textImageRegex = /^data:image\/(png|jpe?g|gif|webp|bmp|svg\+xml)(;charset=[^;,]+)?(;base64)?,[A-Za-z0-9+/=%\s\-_,.<>:;"'()#!?@&]+$/
+
 const latLonRegex = /^\s*([+-]?(?:90(?:.0+)?|[0-8]?\d(?:.\d+)?))\s*[°]?\s*([NS])?\s*(?:,|\s+)\s*([+-]?(?:180(?:.0+)?|1[0-7]\d(?:.\d+)?|\d{1,2}(?:.\d+)?))\s*[°]?\s*([EW])?\s*$/i
 
 getLatLonFromText = text => {
@@ -241,6 +243,21 @@ handleTextStr = (str, type) => {
 
     // default
     //   // TODO
+  }
+
+  // Image (as string)
+  if (textImageRegex.test(convertedStr)) {
+    // TODO
+    const el = createNewPasteEl('image')
+    el.innerHTML = ''
+    el.classList.remove('image')
+
+    const img = new Image()
+    img.src = convertedStr
+    img.style.cssText = 'max-width: calc(100vw - 10em)' // TODO
+    el.appendChild(img)
+    el.classList.add('done')
+    return
   }
 
   // Map from lat/lon
