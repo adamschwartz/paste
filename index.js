@@ -6,12 +6,12 @@ const ellipsizeStr = (str, len) => {
     return str.substr(0, len - 3) + '...'
 }
 
-const ellipsizeDataURL = (str) => {
+const ellipsizeDataURL = str => {
   return ellipsizeStr(str, 400)
 }
 
 
-const getTypeFromString = (str) => {
+const getTypeFromString = str => {
   if (str.indexOf('<?xml version="1.0"') === 0 && str.indexOf('<svg') >= 0 && str.indexOf('<!-- Generator: Sketch') >= 0 && str.indexOf('<desc>Created with Sketch.</desc>') >= 0)
     return 'text/sketch-svg'
 
@@ -26,13 +26,13 @@ const getTypeFromString = (str) => {
   return 'text/plain'
 }
 
-const cleanSketchSVG = (str) => {
+const cleanSketchSVG = str => {
   str = cleanSVG(str)
   str = str.replace(/<!-- Generator: Sketch (.+?)\- http:\/\/www\.bohemiancoding\.com\/sketch -->\n?/, '')
   return str
 }
 
-const cleanSVG = (str) => {
+const cleanSVG = str => {
   str = str.replace(/<\?xml(.+?)\?>\n?/, '')
   str = str.replace(' version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"', '')
   str = str.replace(/ ?version\=\"1\.1\" ?/, '')
@@ -44,17 +44,17 @@ const cleanSVG = (str) => {
   return str
 }
 
-const createNewPasteEl = (type) => {
+const createNewPasteEl = type => {
   const el = document.querySelector(`.templates .paste.${ type }`).cloneNode(true)
   document.querySelector('.results').prepend(el)
   return el
 }
 
-const handleImage = (item) => {
+const handleImage = item => {
   const blob = item.getAsFile()
   const reader = new FileReader()
 
-  reader.onload = (event) => {
+  reader.onload = event => {
     const dataURL = event.target.result
     const el = createNewPasteEl('image')
     const originalEl = el.querySelector('.original')
@@ -78,7 +78,7 @@ const handleImage = (item) => {
     copyLink.textContent = 'Copy'
     actionsEl.appendChild(copyLink)
 
-    const copy = (event) => {
+    const copy = event => {
       event.preventDefault()
 
       copyTextarea.value = dataURL
@@ -106,11 +106,11 @@ const handleImage = (item) => {
   reader.readAsDataURL(blob)
 }
 
-const handleData = (item) => {
+const handleData = item => {
   const blob = item.getAsFile()
   const reader = new FileReader()
 
-  reader.onload = (event) => {
+  reader.onload = event => {
     const dataURL = event.target.result
     const el = createNewPasteEl('data')
     const textareaEl = el.querySelector('.textarea')
@@ -129,7 +129,7 @@ const handleData = (item) => {
     copyLink.textContent = 'Copy'
     actionsEl.appendChild(copyLink)
 
-    const copy = (event) => {
+    const copy = event => {
       event.preventDefault()
 
       copyTextarea.value = dataURL
@@ -157,10 +157,10 @@ const handleData = (item) => {
   reader.readAsDataURL(blob)
 }
 
-const handleText = (item) => {
+const handleText = item => {
   const type = item.type
 
-  item.getAsString((str) => {
+  item.getAsString(str => {
     if (type === 'text/html') {
       handleTextStr(str, 'text/html')
     }
@@ -173,11 +173,11 @@ const handleText = (item) => {
   })
 }
 
-const handleTextFile = (item) => {
+const handleTextFile = item => {
   const blob = item.getAsFile()
   const reader = new FileReader()
 
-  reader.onload = (event) => {
+  reader.onload = event => {
     handleTextStr(reader.result)
   }
 
@@ -315,14 +315,14 @@ handleTextStr = (str, type) => {
   }
 }
 
-const handleEvents = (event) => {
+const handleEvents = event => {
   event.preventDefault()
 
   const items = (event.clipboardData || event.dataTransfer).items
 
   // TODO - use readAsBinaryString && readAsArrayBuffer?
 
-  Array.prototype.forEach.call(items, (item) => {
+  Array.prototype.forEach.call(items, item => {
     if (item.kind === 'file' && item.type.match('^image/')) {
       // TODO - unify this with other SVG detection since currently something could make it past this but then fail in getTypeFromString
       if (item.type.match('^image/svg')) {
@@ -350,6 +350,6 @@ const handleEvents = (event) => {
 
 window.addEventListener('paste', handleEvents)
 
-document.addEventListener('drag', (event) => event.preventDefault())
-document.addEventListener('dragover', (event) => event.preventDefault())
+document.addEventListener('drag', event => event.preventDefault())
+document.addEventListener('dragover', event => event.preventDefault())
 document.addEventListener('drop', handleEvents)
